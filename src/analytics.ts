@@ -29,7 +29,7 @@ function sendToAnalytics(metric: Metric, options: AnalyticsOptions) {
 		href: location.href,
 		event_name: metric.name,
 		value: metric.value.toString(),
-		speed: getConnectionSpeed()
+		speed: navigator.connection.effectiveType
 	};
 
 	if (options.debug) {
