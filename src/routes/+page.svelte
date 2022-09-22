@@ -228,7 +228,7 @@
 		margin: 0;
 	}
 	:global(body) {
-		background: url(/bg.png) no-repeat center center / cover;
+		background: url(/bg.jpg) no-repeat center center / cover;
 
 		display: flex;
 		flex-direction: column;
