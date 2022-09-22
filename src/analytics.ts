@@ -1,7 +1,7 @@
 import type { Metric } from 'web-vitals';
 import { getCLS, getFCP, getFID, getLCP, getTTFB } from 'web-vitals';
 
-const vitalsUrl = `http://vitals.vercel-insights.com/v1/vitals`;
+const vitalsUrl = `https://vitals.vercel-insights.com/v1/vitals`;
 
 type AnalyticsOptions = {
 	routeId: string;
