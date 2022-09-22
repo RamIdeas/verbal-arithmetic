@@ -5,8 +5,11 @@
 	let answer = '';
 	let score = 0;
 	let skips = 0;
+	let highscore = parseInt(globalThis.localStorage?.getItem('highscore') ?? '0', 10);
 	let status: Status = 'initial';
 	let recognition: SpeechRecognition;
+
+	$: if (score > highscore) globalThis.localStorage?.setItem('highscore', score.toString());
 
 	type Operator = '+' | '-' | '×' | '÷';
 	type Status = 'initial' | 'question';
@@ -112,7 +115,7 @@
 
 		const fn = fns[operator];
 		const correctAnswer = fn(number1, number2);
-		const parsedAnswer = parseInt(answer);
+		const parsedAnswer = parseInt(answer, 10);
 		const isCorrect = parsedAnswer === correctAnswer;
 
 		console.log(`${parsedAnswer} is ${isCorrect ? 'right' : 'wrong'}`);
@@ -194,7 +197,10 @@
 	</section>
 
 	<section class="score">
-		Score: {score}
+		<div>Score: {score}</div>
+		{#if score > highscore}
+			<div class="highscore">High Score</div>
+		{/if}
 	</section>
 
 	<footer>
@@ -224,12 +230,16 @@
 		display: contents;
 	}
 
-	section {
+	.question {
 		width: 100%;
 		display: flex;
 		gap: 2rem;
 		justify-content: center;
+	}
 
+	.question,
+	.answer,
+	.score {
 		font-size: 4rem;
 		font-family: 'Courier New', Courier, monospace;
 		text-align: center;
@@ -245,6 +255,12 @@
 	.score {
 		color: lightgrey;
 		font-size: 1.4rem;
+	}
+	.highscore {
+		font-size: 1rem;
+		color: hotpink;
+		text-transform: uppercase;
+		padding: 0.5rem;
 	}
 
 	footer {
