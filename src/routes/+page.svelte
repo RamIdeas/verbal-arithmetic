@@ -83,6 +83,7 @@
 			// );
 
 			let result = event.results.item(event.resultIndex).item(0).transcript;
+			console.log({ speech: result });
 
 			if (result.includes('clear')) {
 				initSpeechRecognition();
@@ -91,19 +92,21 @@
 			}
 
 			if (result.includes('skip')) {
+				initSpeechRecognition();
 				skipQuestion();
 				return;
 			}
 
-			if (result.includes('answer')) {
+			if (result.includes('answer') || /\bon\b/.test(result)) {
+				initSpeechRecognition();
 				submitAnswer();
 				return;
 			}
 
 			result = result
 				.replaceAll(
-					/one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eightteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety/gi,
-					(match) => numbers[match.toLowerCase()] ?? match.toLowerCase()
+					new RegExp(Object.keys(replacements).join('|'), 'gi'),
+					(match) => replacements[match.toLowerCase()] ?? match.toLowerCase()
 				)
 				.replaceAll(/\D/g, '');
 
@@ -134,6 +137,26 @@
 			score += 1;
 			clearAnswer();
 			generateQuestion();
+		} else {
+			document
+				.querySelector('.answer')
+				?.animate(
+					[
+						{ transform: 'translateX(-1px)' },
+						{ transform: 'translateX(2px)' },
+						{ transform: 'translateX(-4px)' },
+						{ transform: 'translateX(4px)', color: 'tomato' },
+						{ transform: 'translateX(-4px)' },
+						{ transform: 'translateX(4px)' },
+						{ transform: 'translateX(-4px)' },
+						{ transform: 'translateX(2px)', color: 'white' },
+						{ transform: 'translateX(-1px)' }
+					],
+					{
+						duration: 500,
+						iterations: 1
+					}
+				);
 		}
 	}
 
@@ -154,13 +177,21 @@
 	}
 
 	type Operation = (a: number, b: number) => number;
-	const numbers: Record<string, string> = {
+	const replacements: Record<string, string> = {
 		one: '1',
+		what: '1',
+		warn: '1',
 		two: '2',
+		to: '2',
+		too: '2',
 		three: '3',
 		four: '4',
+		for: '4',
+		or: '4',
 		five: '5',
 		six: '6',
+		sex: '6',
+		set: '6',
 		seven: '7',
 		eight: '8',
 		nine: '9',
