@@ -1,4 +1,14 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { webVitals } from '../analytics';
+
+	onMount(() => {
+		const analyticsId = import.meta.env.VERCEL_ANALYTICS_ID as string;
+
+		if (analyticsId) webVitals({ routeId: '/', analyticsId });
+		else console.warn({ analyticsId });
+	});
+
 	let number1 = getRandomNumber();
 	let number2 = getRandomNumber();
 	let operator = getRandomOperator();
