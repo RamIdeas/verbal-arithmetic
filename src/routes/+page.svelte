@@ -15,6 +15,7 @@
 	let answer = '';
 	let score = 0;
 	let skips = 0;
+	let listening = false;
 	let highscore = parseInt(globalThis.localStorage?.getItem('highscore') ?? '0', 10);
 	let status: Status = 'initial';
 	let recognition: SpeechRecognition;
@@ -55,72 +56,76 @@
 
 		if (status === 'initial') status = 'question';
 	}
+
 	function initSpeechRecognition() {
 		const SpeechRecognition: typeof webkitSpeechRecognition =
 			webkitSpeechRecognition || globalThis.SpeechRecognition;
 
-		recognition?.abort();
+		recognition?.removeEventListener('start', onSpeechRecognitionStart);
+		recognition?.removeEventListener('result', onSpeechRecognitionResult);
+		recognition?.removeEventListener('error', onSpeechRecognitionError);
+		recognition?.removeEventListener('end', onSpeechRecognitionEnd);
+		if (listening) recognition?.abort();
+
 		recognition = new SpeechRecognition();
 		recognition.continuous = true;
 		recognition.interimResults = true;
-		// recognition.grammars = new webkitSpeechGrammarList();
-		// recognition.grammars.addFromString(
-		// 	'#JSGF V1.0; grammar numbers; public <number> = zero | one | two | three | four | five | six | seven | eight | nine | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 ;',
-		// 	1
-		// );
 
-		// recognition.addEventListener('start', function () {
-		// 	console.log('recognition.start');
-		// 	console.time('recognition');
-		// });
-		recognition.addEventListener('result', function (event) {
-			// if (event.results.item(0).item(0).confidence > 0.5) console.timeEnd('voice');
-			// console.log(
-			// 	'recognition.result',
-			// 	event.results.length,
-			// 	event.results.item(0).item(0).transcript,
-			// 	event.results.item(0).item(0).confidence
-			// );
-
-			let result = event.results.item(event.resultIndex).item(0).transcript;
-			console.log({ speech: result });
-
-			if (result.includes('clear')) {
-				initSpeechRecognition();
-				answer = '';
-				return;
-			}
-
-			if (result.includes('skip')) {
-				initSpeechRecognition();
-				skipQuestion();
-				return;
-			}
-
-			if (result.includes('answer') || /\bon\b/.test(result)) {
-				initSpeechRecognition();
-				submitAnswer();
-				return;
-			}
-
-			result = result
-				.replaceAll(
-					new RegExp(Object.keys(replacements).join('|'), 'gi'),
-					(match) => replacements[match.toLowerCase()] ?? match.toLowerCase()
-				)
-				.replaceAll(/\D/g, '');
-
-			answer = result;
-		});
-		// recognition.addEventListener('error', function (event) {
-		// 	console.log('recognition.error');
-		// });
-		// recognition.addEventListener('end', function () {
-		// 	console.log('recognition.end');
-		// 	console.timeEnd('recognition');
-		// });
+		recognition.addEventListener('start', onSpeechRecognitionStart);
+		recognition.addEventListener('result', onSpeechRecognitionResult);
+		recognition.addEventListener('error', onSpeechRecognitionError);
+		recognition.addEventListener('end', onSpeechRecognitionEnd);
 
 		recognition.start();
+	}
+	function onSpeechRecognitionStart() {
+		console.log('recognition.start');
+		// console.time('recognition');
+		listening = true;
+	}
+	function onSpeechRecognitionResult(event: SpeechRecognitionEvent) {
+		let result = event.results.item(event.resultIndex).item(0).transcript;
+		console.log({ speech: result });
+
+		if (result.includes('clear')) {
+			initSpeechRecognition();
+			answer = '';
+			return;
+		}
+
+		if (result.includes('skip')) {
+			initSpeechRecognition();
+			skipQuestion();
+			return;
+		}
+
+		if (result.includes('answer') || /\bon\b/.test(result)) {
+			initSpeechRecognition();
+			submitAnswer();
+			return;
+		}
+
+		result = result
+			.replaceAll(
+				new RegExp(Object.keys(replacements).join('|'), 'gi'),
+				(match) => replacements[match.toLowerCase()] ?? match.toLowerCase()
+			)
+			.replaceAll(/\D/g, '');
+
+		if (result) answer = result;
+	}
+	function onSpeechRecognitionError(event: SpeechRecognitionErrorEvent) {
+		console.error('recognition.error', event.error);
+		listening = false;
+		if (event.error !== 'aborted') initSpeechRecognition();
+	}
+	function onSpeechRecognitionEnd() {
+		console.log('recognition.end');
+		// console.timeEnd('recognition');
+		listening = false;
+		setTimeout(() => {
+			if (!listening) initSpeechRecognition();
+		}, 1000);
 	}
 
 	function submitAnswer() {
@@ -244,11 +249,15 @@
 		{/if}
 	</section>
 
-	<footer>
-		<p>Speak your answer<br /></p>
-		<p>Say <strong>ANSWER</strong> to submit<br /></p>
-		<p>Say <strong>CLEAR</strong> to ignore previous speech<br /></p>
-		<p>Say <strong>SKIP</strong> to try another question</p>
+	<footer on:click={initSpeechRecognition}>
+		{#if !listening}
+			<p class="instructions-error">Tap here to reset speech recognition</p>
+		{:else}
+			<p class="instructions-speak">Speak your answer</p>
+			<p class="instructions-answer">Say <strong>ANSWER</strong> to submit<br /></p>
+			<p class="instructions-clear">Say <strong>CLEAR</strong> to ignore previous speech<br /></p>
+			<p class="instructions-skip">Say <strong>SKIP</strong> to try another question</p>
+		{/if}
 	</footer>
 {/if}
 
