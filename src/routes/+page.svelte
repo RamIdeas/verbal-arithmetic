@@ -88,13 +88,12 @@
 		console.log({ speech: result });
 
 		if (result.includes('clear')) {
-			initSpeechRecognition();
-			answer = '';
+			clearAnswer();
+
 			return;
 		}
 
 		if (result.includes('skip')) {
-			initSpeechRecognition();
 			skipQuestion();
 			return;
 		}
@@ -128,7 +127,9 @@
 		}, 1000);
 	}
 
-	function submitAnswer() {
+	function submitAnswer({ animate = true } = {}) {
+		if (animate) animateCommand('answer');
+
 		if (!answer) return;
 
 		const fn = fns[operator];
@@ -140,7 +141,7 @@
 
 		if (isCorrect) {
 			score += 1;
-			clearAnswer();
+			clearAnswer({ animate: false });
 			generateQuestion();
 		} else {
 			document
@@ -165,20 +166,35 @@
 		}
 	}
 
-	function clearAnswer() {
+	function clearAnswer({ animate = true } = {}) {
+		if (animate) animateCommand('clear');
 		answer = '';
 		initSpeechRecognition();
 	}
 
-	function skipQuestion() {
+	function skipQuestion({ animate = true } = {}) {
+		if (animate) animateCommand('skip');
 		skips += 1;
 		generateQuestion();
+		initSpeechRecognition();
 	}
 
 	function onKeyPress(e: KeyboardEvent) {
 		if (e.key === 'c') clearAnswer();
 		if (e.key === ' ') submitAnswer();
 		if (e.key === 'n') skipQuestion();
+	}
+
+	function animateCommand(command: 'answer' | 'clear' | 'skip') {
+		document
+			.querySelector(`.instructions-${command} strong`)
+			?.animate(
+				[{ filter: 'brightness(1)' }, { filter: 'brightness(1.5)' }, { filter: 'brightness(1)' }],
+				{
+					duration: 300,
+					iterations: 3
+				}
+			);
 	}
 
 	type Operation = (a: number, b: number) => number;
@@ -254,8 +270,8 @@
 			<p class="instructions-error">Tap here to reset speech recognition</p>
 		{:else}
 			<p class="instructions-speak">Speak your answer</p>
-			<p class="instructions-answer">Say <strong>ANSWER</strong> to submit<br /></p>
-			<p class="instructions-clear">Say <strong>CLEAR</strong> to ignore previous speech<br /></p>
+			<p class="instructions-answer">Say <strong>ANSWER</strong> to submit</p>
+			<p class="instructions-clear">Say <strong>CLEAR</strong> to ignore previous speech</p>
 			<p class="instructions-skip">Say <strong>SKIP</strong> to try another question</p>
 		{/if}
 	</footer>
@@ -319,6 +335,7 @@
 		padding: 1rem;
 		text-align: center;
 		font-family: monospace;
+		color: lightgray;
 	}
 	footer > p {
 		margin: 0;
@@ -335,5 +352,6 @@
 		border-radius: 50px;
 		text-transform: uppercase;
 		font-family: 'Courier New', Courier, monospace;
+		cursor: pointer;
 	}
 </style>
