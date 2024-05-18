@@ -76,9 +76,11 @@
 		// console.time('recognition');
 		listening = true;
 	}
+	let latestSpeech = '';
 	function onSpeechRecognitionResult(event: SpeechRecognitionEvent) {
 		let result = event.results.item(event.resultIndex).item(0).transcript;
 		console.log({ speech: result });
+		latestSpeech = result.trim();
 
 		if (result.includes('clear')) {
 			clearAnswer();
@@ -276,6 +278,7 @@
 			<p class="instructions-error">Tap here to reset speech recognition</p>
 		{:else}
 			<p class="instructions-speak">Speak your answer</p>
+			<p class="transcription">{latestSpeech ? `"${latestSpeech}"` : ''}</p>
 			<p class="instructions-answer">Say <strong>NEXT</strong> to submit</p>
 			<p class="instructions-clear">Say <strong>CLEAR</strong> to ignore previous speech</p>
 			<p class="instructions-skip">Say <strong>SKIP</strong> to try another question</p>
@@ -346,6 +349,9 @@
 	footer > p {
 		margin: 0;
 		line-height: 1.6;
+	}
+	footer .transcription {
+		color: #aaa;
 	}
 
 	button {
