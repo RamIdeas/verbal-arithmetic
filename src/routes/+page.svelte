@@ -1,17 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { webVitals } from '../analytics';
-
-	onMount(() => {
-		const analyticsId = import.meta.env.VERCEL_ANALYTICS_ID as string;
-
-		if (analyticsId) webVitals({ routeId: '/', analyticsId });
-		else console.warn({ analyticsId });
-	});
-
-	let number1 = getRandomNumber();
-	let number2 = getRandomNumber();
-	let operator = getRandomOperator();
+	let number1: number;
+	let number2: number;
+	let operator: Operator;
 	let answer = '';
 	let score = 0;
 	let skips = 0;
@@ -29,7 +19,7 @@
 		const operators: Operator[] = ['+', '-', '×', '÷'];
 		return operators[Math.floor(Math.random() * 4)];
 	}
-	function getRandomNumber(max = 99, min = 2) {
+	function getRandomNumber(max: number, min = 1) {
 		return Math.floor(Math.random() * max) + min;
 	}
 	function generateQuestion() {
@@ -37,8 +27,8 @@
 		// the isReasonable check favours addition (and subtraction) over multiplication and division
 		const op = getRandomOperator();
 		while (true) {
-			const n1 = getRandomNumber();
-			const n2 = getRandomNumber();
+			const n1 = getRandomNumber(99, 2);
+			const n2 = getRandomNumber(99, 2);
 			const fn = fns[op];
 			const correctAnswer = fn(n1, n2);
 			const isInt = Number.isInteger(correctAnswer);
@@ -91,7 +81,6 @@
 
 		if (result.includes('clear')) {
 			clearAnswer();
-
 			return;
 		}
 
@@ -250,13 +239,13 @@
 {#if status === 'initial'}
 	<button on:click={onClickInit}>Start</button>
 {:else}
-	<section class="question" on:click={skipQuestion}>
+	<section class="question" on:click={() => skipQuestion()}>
 		<div>{number1}</div>
 		<div>{operator}</div>
 		<div>{number2}</div>
 	</section>
 
-	<section class="answer" on:click={submitAnswer}>
+	<section class="answer" on:click={() => submitAnswer()}>
 		<div>{answer}</div>
 	</section>
 
