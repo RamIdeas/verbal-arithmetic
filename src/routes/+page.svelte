@@ -78,7 +78,7 @@
 	}
 	let latestSpeech = '';
 	function onSpeechRecognitionResult(event: SpeechRecognitionEvent) {
-		let result = event.results.item(event.resultIndex).item(0).transcript;
+		let result = event.results.item(event.resultIndex).item(0).transcript.toLowerCase();
 		console.log({ speech: result });
 		latestSpeech = result.trim();
 
