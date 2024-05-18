@@ -33,10 +33,12 @@
 		return Math.floor(Math.random() * max) + min;
 	}
 	function generateQuestion() {
+		// pick operator outside loop to ensure equal chance of each operator
+		// the isReasonable check favours addition (and subtraction) over multiplication and division
+		const op = getRandomOperator();
 		while (true) {
 			const n1 = getRandomNumber();
 			const n2 = getRandomNumber();
-			const op = getRandomOperator();
 			const fn = fns[op];
 			const correctAnswer = fn(n1, n2);
 			const isInt = Number.isInteger(correctAnswer);
