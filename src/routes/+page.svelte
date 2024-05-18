@@ -139,8 +139,8 @@
 				.querySelector('.answer')
 				?.animate(
 					[
-						{ transform: 'scale(1.3)', opacity: '0.5', color: 'green' },
-						{ transform: 'scale(1.6)', opacity: '0', color: 'green' }
+						{ transform: 'scale(1.3)', opacity: '0.5', color: '#0f0' },
+						{ transform: 'scale(1.6)', opacity: '0', color: '#0f0' }
 					],
 					{
 						duration: 500,
