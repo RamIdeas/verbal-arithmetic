@@ -132,7 +132,21 @@
 
 		if (isCorrect) {
 			score += 1;
-			clearAnswer({ animate: false });
+			document
+				.querySelector('.answer')
+				?.animate(
+					[
+						{ transform: 'scale(1.3)', opacity: '0.5', color: 'green' },
+						{ transform: 'scale(1.6)', opacity: '0', color: 'green' }
+					],
+					{
+						duration: 500,
+						iterations: 1
+					}
+				)
+				.finished.then(() => {
+					clearAnswer({ animate: false });
+				});
 			generateQuestion();
 		} else {
 			document
