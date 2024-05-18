@@ -89,7 +89,7 @@
 			return;
 		}
 
-		if (result.includes('answer') || /\bon\b/.test(result)) {
+		if (result.includes('next') || /\bon\b/.test(result)) {
 			initSpeechRecognition();
 			submitAnswer();
 			return;
@@ -261,7 +261,7 @@
 			<p class="instructions-error">Tap here to reset speech recognition</p>
 		{:else}
 			<p class="instructions-speak">Speak your answer</p>
-			<p class="instructions-answer">Say <strong>ANSWER</strong> to submit</p>
+			<p class="instructions-answer">Say <strong>NEXT</strong> to submit</p>
 			<p class="instructions-clear">Say <strong>CLEAR</strong> to ignore previous speech</p>
 			<p class="instructions-skip">Say <strong>SKIP</strong> to try another question</p>
 		{/if}
