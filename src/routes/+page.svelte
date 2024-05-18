@@ -33,8 +33,9 @@
 			const correctAnswer = fn(n1, n2);
 			const isInt = Number.isInteger(correctAnswer);
 			const isReasonable = correctAnswer > 0 && correctAnswer <= 999;
+			const isTrivial = correctAnswer === 1;
 
-			if (!isInt || !isReasonable) continue;
+			if (!isInt || !isReasonable || isTrivial) continue;
 
 			// console.log(`${n1} ${op} ${n2} = ${correctAnswer}`);
 			[number1, number2, operator] = [n1, n2, op];
