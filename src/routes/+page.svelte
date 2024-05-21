@@ -188,9 +188,14 @@
 	}
 
 	function onKeyPress(e: KeyboardEvent) {
+		console.log(e.key);
 		if (e.key === 'c') clearAnswer();
-		if (e.key === ' ') submitAnswer();
-		if (e.key === 'n') skipQuestion();
+		if (e.key === ' ' || e.key === 'Enter') submitAnswer();
+		if (e.key === 'x') skipQuestion();
+
+		if (/\d/.test(e.key)) {
+			answer += e.key;
+		}
 	}
 
 	function animateCommand(command: 'answer' | 'clear' | 'skip') {
