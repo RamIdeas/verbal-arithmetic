@@ -187,15 +187,13 @@
 		initSpeechRecognition();
 	}
 
-	function onKeyPress(e: KeyboardEvent) {
+	function onKeyDown(e: KeyboardEvent) {
 		console.log(e.key);
-		if (e.key === 'c') clearAnswer();
+		if (e.key === 'c' || e.key === 'Escape') clearAnswer();
 		if (e.key === ' ' || e.key === 'Enter') submitAnswer();
-		if (e.key === 'x') skipQuestion();
-
-		if (/\d/.test(e.key)) {
-			answer += e.key;
-		}
+		if (e.key === 'x' || e.key === 'ArrowRight') skipQuestion();
+		if (e.key === 'Backspace') answer = answer.slice(0, -1);
+		if (/\d/.test(e.key)) answer += e.key;
 	}
 
 	function animateCommand(command: 'answer' | 'clear' | 'skip') {
@@ -256,7 +254,7 @@
 	};
 </script>
 
-<svelte:window on:keypress={onKeyPress} />
+<svelte:window on:keydown={onKeyDown} />
 
 {#if status === 'initial'}
 	<button on:click={onClickInit}>Start</button>
